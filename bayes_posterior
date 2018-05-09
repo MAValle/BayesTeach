@@ -1,0 +1,32 @@
+# R-Function that computes the posterior probability -----
+# Consider the next problem as an example to understand the code: 
+
+# We have two spinners T1 and T2. Each spinner has two colors, R and V. 
+# At T1, the probability of R is 1/2 and at T2 the probability of R is 0.3.
+# So, P(R|T1)=0.5 and P(R|T2)=0.3.
+# We spin a spinner, and it comes out and R-color
+# What's the probability of that being from T1 (or T2)?. ie, P(T1|R).
+# Initially we assumed that P(T1)=(T2)=0.5 (prior).
+
+# Inputs to the function: 
+# source: vector od spinners, could be a string vector.
+# prior: priors numeric vector 
+# like: likelihood muneric vector
+
+# Notes:
+# prior has length equal to the number of -colors- in the experiment. 
+# source has length equal to the number of -spinners-
+# like has length equal to the number -colors- 
+
+Output: data frame with 4 columns: source, prior, likelihood, and posterior
+
+# example:
+# df <- bayes_posterior(fuente = c("T1", "T2"), prior=c(1/2, 1/2), like=c(1/2, 1/3))
+
+bayes_posterior <- function(fuente, prior, like) {
+  producto <- prior*like
+  marg <- sum(producto)
+  posterior <- producto/marg
+  df <- data.frame(Fuente= fuente, Prior=prior, Likelihood=like, Posterior=posterior)
+  return(df)
+}
