@@ -1,0 +1,62 @@
+# Function to carry out a bayesian updating.
+# The bayesian updating we do here is a sequential bayesian updating, 
+# in which in each iteration we see evidence that it is coming in, a posterior
+# probability is computed, and this becomes the subsequent prior for
+# teh next piece of evidence. 
+
+# Inputs: 
+# 1. evidence -  is a numerical vector with all the evidence.
+# If there are F colors, then the vector contains numbers
+# from 1 to F indicating the evidence corresponding to -color-.
+
+# 2. LIK is a matrix of F rows and C columns, where
+# There is one column for each -spinner-, so there are C spinners.
+# There is one row for each -color-, so there are F colors.
+# The cells in this matrix are probabilities that represent the likelihood. 
+# Each column should add 1.
+# For example, for 2 spinners and 3 colors we have:
+#          T1 T2
+# color R 0.3 0.4
+# color B 0.2 0.4
+# color W 0.5 0.2
+# so, like <- matrix(c(0.3, 0.2, 0.5, 0.4, 0.4, 0.2), nrow=3, ncol=2 )
+
+# 3. prior is a numeric vectro indicatinf the priors.
+
+# 4. fuente could be a numeric or string vector indicating the name of
+# the spinners.
+
+# Output: is a matrix with number of rows equal to the length of evidence
+# and number of columns equal number of spinners, for which posterios 
+# are being te be placed.
+
+# Example:
+# likelihood <- matrix(c(0.5, 0.5, 0.7, 0.3), nrow=2, ncol=2 )
+# dat <- sample(c(1,2), size=10, replace=TRUE)
+# test <- bayesian_updating(fuente = c("T1", "T2"), prior=c(1/2, 1/2), LIK=likelihood, evidence=dat)
+
+
+
+bayesian_updating <- function(fuente, prior, LIK, evidence) {
+  n <- length(fuente)
+  loops <- length(evidence)
+  salida <- matrix(NA, ncol=n+2, nrow=length(evidence)) 
+  ciclo = 1 #este contador marca la evidencia con que se trabaja
+  #partida
+  # vemos evidencia:
+  show_data <- evidence[ciclo]
+  # rescatamos el vector de likelihood acorde a la evidencia:
+  like <- LIK[show_data, ]
+  updating <- bayes_posterior(fuente = fuente, prior=prior, like=like)
+  salida[ciclo, ] <- c(ciclo, show_data, updating$Posterior )
+  while (ciclo < loops) {
+    ciclo = ciclo + 1
+    # vemos evidencia:
+    show_data <- evidence[ciclo]
+    # rescatamos el vector de likelihood acorde a la evidencia:
+    like <- LIK[show_data, ]
+    updating <- bayes_posterior(fuente = fuente, prior=updating$Posterior, like=like)
+    salida[ciclo, ] <- c(ciclo, show_data, updating$Posterior)
+  }
+  return(salida)
+}
