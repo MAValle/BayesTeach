@@ -40,7 +40,7 @@
 bayesian_updating <- function(fuente, prior, LIK, evidence) {
   n <- length(fuente)
   loops <- length(evidence)
-  salida <- matrix(NA, ncol=n+2, nrow=length(evidence)) 
+  salida <- matrix(NA, ncol=n+2, nrow=length(evidence)) # C1: numero de la evidencia, C2:evidencia, Cn:posteriores
   ciclo = 1 #este contador marca la evidencia con que se trabaja
   #partida
   # vemos evidencia:
@@ -58,5 +58,9 @@ bayesian_updating <- function(fuente, prior, LIK, evidence) {
     updating <- bayes_posterior(fuente = fuente, prior=updating$Posterior, like=like)
     salida[ciclo, ] <- c(ciclo, show_data, updating$Posterior)
   }
+  prefix <- "posterior"
+  sufix  <- fuente
+  my_names <- paste(prefix, sufix, sep="_")
+  colnames(salida) <- c("Ciclo", "Evidencia", my_names)
   return(salida)
 }
